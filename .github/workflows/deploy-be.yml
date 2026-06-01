@@ -1,0 +1,56 @@
+name: Deploy Backend to ECR + ECS (OIDC)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'BE/**'
+
+permissions:
+  id-token: write      # Bắt buộc để request token OIDC từ GitHub
+  contents: read       # Bắt buộc để checkout code
+
+env:
+  AWS_REGION: ap-east-1  # Sửa lại vùng AWS tương ứng của bạn nếu khác
+  ECR_REPOSITORY: medecu/images
+  ECS_CLUSTER: medecu-cluster
+  ECS_SERVICE: medecu-task-service
+  CONTAINER_NAME: medecu-containers
+  ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_ARN }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (via OIDC Role)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: GitHubActionsBackendDeploy
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest BE/
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Force new ECS deployment
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
+            --force-new-deployment

@@ -1,0 +1,59 @@
+name: Deploy Frontend to S3 + CloudFront (OIDC)
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'FE/**'
+
+permissions:
+  id-token: write      # Bắt buộc để request token OIDC từ GitHub
+  contents: read       # Bắt buộc để checkout code
+
+env:
+  AWS_REGION: us-east-1  # Sửa lại vùng AWS tương ứng của bạn nếu khác
+  S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+  ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_ARN }}
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'FE/package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          cd FE
+          npm ci
+
+      - name: Build frontend
+        run: |
+          cd FE
+          npm run build
+
+      - name: Configure AWS credentials (via OIDC Role)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: GitHubActionsFrontendDeploy
+
+      - name: Deploy to S3 Bucket
+        run: |
+          aws s3 sync FE/dist/ s3://${{ env.S3_BUCKET }} --delete
+
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
