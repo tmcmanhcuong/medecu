@@ -1,0 +1,48 @@
+{
+    "id": "70062f4a-ad63-43dd-bd81-d75bbcb20384",
+    "user_id": "default_user",
+    "title": "RAG",
+    "path": "",
+    "content": [
+        {
+            "front": "RAG là gì?",
+            "back": "Retrieval-Augmented Generation (RAG) là phương pháp kết hợp kỹ thuật truy xuất thông tin với mô hình ngôn ngữ để trả lời câu hỏi dựa trên tài liệu được lấy ra."
+        },
+        {
+            "front": "Hai thành phần chính của hệ thống RAG là gì?",
+            "back": "Retriever (bộ truy xuất) và Generator (bộ sinh) - trong đó Generator còn được gọi là Reader."
+        },
+        {
+            "front": "Hai giai đoạn của quy trình RAG là gì?",
+            "back": "Giai đoạn retrieval (truy xuất các tài liệu liên quan) và giai đoạn generation (sinh câu trả lời từ các tài liệu được lấy ra)."
+        },
+        {
+            "front": "RAG giải quyết vấn đề gì của Large Language Models?",
+            "back": "RAG giúp giảm thiểu hallucination, cung cấp thông tin factual về dữ liệu độc quyền, và xử lý thông tin thay đổi theo thời gian."
+        },
+        {
+            "front": "Cơ chế hoạt động cơ bản của RAG như thế nào?",
+            "back": "RAG gọi retriever để lấy k tài liệu hàng đầu liên quan, sau đó truyền các tài liệu này cùng với prompt cho LLM để sinh câu trả lời."
+        },
+        {
+            "front": "Lợi ích chính của RAG là gì?",
+            "back": "RAG đảm bảo câu trả lời dựa trên dữ liệu tin cậy, cung cấp ngữ cảnh kèm câu trả lời, và hỗ trợ thông tin cập nhật sau thời điểm huấn luyện LLM."
+        },
+        {
+            "front": "Knowledge citation trong RAG có tác dụng gì?",
+            "back": "Knowledge citation giúp người dùng xác định độ tin cậy của câu trả lời và tìm hiểu thêm bằng cách truy vết nguồn tài liệu gốc."
+        },
+        {
+            "front": "Một số kiến trúc RAG phức tạp bao gồm những thành phần nào?",
+            "back": "Reranker để sắp xếp lại các đoạn văn bản, multi-hop architectures cho các câu hỏi phức tạp yêu cầu nhiều lần truy xuất."
+        },
+        {
+            "front": "Làm thế nào để cải thiện hiệu suất của hệ thống RAG?",
+            "back": "Có thể huấn luyện LLM qua instruction-tuning hoặc huấn luyện IR engine để tối ưu hóa việc truy xuất tài liệu cho kịch bản RAG."
+        },
+        {
+            "front": "Phản xạ (reflection) trong RAG có ý nghĩa gì?",
+            "back": "Phản xạ là quá trình LLM sinh suy luận về những tài liệu nào hữu ích, giúp cải thiện khả năng xác định tài liệu phù hợp và in-context learning."
+        }
+    ]
+}

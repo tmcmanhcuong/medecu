@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+alembic
+python-dotenv
+requests
+beautifulsoup4
+PyPDF2
+python-multipart
+email-validator
+urllib3<2
+httpx
+boto3
+botocore

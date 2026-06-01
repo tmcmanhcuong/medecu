@@ -1,0 +1,64 @@
+/* React-PDF Text Layer Styles */
+.react-pdf__Page__textContent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    opacity: 0.2;
+    line-height: 1;
+}
+
+.react-pdf__Page__textContent span {
+    color: transparent;
+    position: absolute;
+    white-space: pre;
+    cursor: text;
+    transform-origin: 0% 0%;
+}
+
+.react-pdf__Page__textContent ::selection {
+    background: rgba(0, 123, 255, 0.3);
+}
+
+/* Annotation Layer Styles */
+.react-pdf__Page__annotations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Performance optimizations */
+.react-pdf__Page canvas {
+    display: block;
+    user-select: none;
+}
+
+/* Smooth transitions for highlights */
+.pdf-highlight {
+    transition: all 0.15s ease-out;
+}
+
+/* Optimize scrolling */
+.pdf-container {
+    scroll-behavior: smooth;
+    height: 100%;
+}
+
+/* Pulse animation for selected highlight */
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        transform: scale(1);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+        transform: scale(1.02);
+    }
+}

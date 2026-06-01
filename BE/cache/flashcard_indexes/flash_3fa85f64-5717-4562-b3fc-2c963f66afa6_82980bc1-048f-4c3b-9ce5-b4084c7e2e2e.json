@@ -1,0 +1,64 @@
+{
+    "id": "82980bc1-048f-4c3b-9ce5-b4084c7e2e2e",
+    "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "title": "RAG",
+    "path": "",
+    "content": [
+        {
+            "front": "RAG (Retrieval-Augmented Generation) là gì?",
+            "back": "Phương pháp dùng IR để truy xuất tài liệu liên quan, sau đó dùng LLM tạo câu trả lời dựa trên tài liệu đó và truy vấn gốc."
+        },
+        {
+            "front": "Hai thành phần chính của hệ thống RAG",
+            "back": "Retriever (bộ truy xuất) và Generator/Reader (bộ tạo sinh) – hai giai đoạn: retrieval và generation."
+        },
+        {
+            "front": "RAG giúp giải quyết vấn đề gì của LLM?",
+            "back": "Giảm hallucination, hỗ trợ dữ liệu độc quyền/riêng tư, và xử lý thông tin động, thay đổi theo thời gian."
+        },
+        {
+            "front": "Knowledge Citation trong RAG",
+            "back": "Trích dẫn nguồn kiến thức đi kèm câu trả lời, giúp người dùng đánh giá độ tin cậy hoặc tra cứu thêm."
+        },
+        {
+            "front": "Vocabulary Mismatch Problem",
+            "back": "Lỗi của tf-idf/BM25 khi truy vấn và tài liệu không có từ trùng nhau chính xác, dù cùng nghĩa."
+        },
+        {
+            "front": "Giải pháp cho Vocabulary Mismatch",
+            "back": "Dùng dense embeddings thay cho sparse word-count vectors, triển khai qua encoder như BERT."
+        },
+        {
+            "front": "Bi-encoder",
+            "back": "Kiến trúc dùng hai encoder riêng biệt cho query và document; tính điểm bằng dot product – nhanh nhưng kém chính xác hơn."
+        },
+        {
+            "front": "Reranker trong RAG",
+            "back": "Thành phần bổ sung sắp xếp lại các đoạn văn đã truy xuất để cải thiện thứ tự độ liên quan."
+        },
+        {
+            "front": "Multi-hop Architecture trong RAG",
+            "back": "Kiến trúc dùng truy vấn để lấy tài liệu, rồi kết hợp với truy vấn gốc để thực hiện vòng truy xuất thứ hai."
+        },
+        {
+            "front": "Instruction-tuning LLM cho RAG",
+            "back": "Fine-tune LLM trên bộ dữ liệu gồm câu hỏi, đoạn văn được truy xuất và câu trả lời đúng để cải thiện hiệu suất."
+        },
+        {
+            "front": "Test-time Compute trong RAG",
+            "back": "Kỹ thuật yêu cầu LLM vừa trả lời câu hỏi vừa sinh reflection về đoạn văn hữu ích, dùng cho in-context learning."
+        },
+        {
+            "front": "Faiss",
+            "back": "Thuật toán tìm kiếm láng giềng gần đúng (approximate nearest neighbor) hiệu quả cho dense vector search."
+        },
+        {
+            "front": "BM25",
+            "back": "Biến thể nâng cao của tf-idf, thêm tham số k (cân bằng TF và IDF) và b (chuẩn hóa độ dài tài liệu)."
+        },
+        {
+            "front": "Tại sao cần huấn luyện IR engine trong RAG?",
+            "back": "Vì IR engine mặc định chưa được tối ưu cho kịch bản RAG; cần fine-tune để truy xuất tốt hơn cho mục tiêu sinh văn bản."
+        }
+    ]
+}

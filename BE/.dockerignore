@@ -1,0 +1,72 @@
+# VCS and CI metadata
+.git
+.git/
+.github/
+.gitignore
+.gitmodules
+
+# Docker metadata is needed by the builder, not by COPY . .
+Dockerfile
+.dockerignore
+
+# Local configuration, credentials, and secret-like files
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+aws-g10-w7.json
+
+# Python caches, coverage, and build artifacts
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Runtime/generated cache and local output files
+cache/
+book_entities_indexes/
+markdown_indexes/
+quizz_indexes/
+flash_indexes/
+cited_indexes/
+cacheoutput.txt
+output.txt
+output.md
+*.log
+
+# Frontend sources are not used by the backend image build
+frontend/
+
+# Test and local-only scripts
+tests/
+test_*.py
+*_test.py
+conftest.py
+agentcore/test_*.py
+
+# Documentation not needed at runtime
+README.md
+alembic/README.md

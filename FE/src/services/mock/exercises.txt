@@ -1,0 +1,101 @@
+/**
+ * Exercise-related API services
+ */
+
+export interface AnswerItem {
+  exercise_id: string;
+  selected_answer: "A" | "B" | "C" | "D";
+}
+
+export interface ExerciseSubmissionRequest {
+  job_id: string;
+  answers: AnswerItem[];
+}
+
+export interface ExerciseResult {
+  exercise_id: string;
+  selected_answer: "A" | "B" | "C" | "D";
+  correct_answer: "A" | "B" | "C" | "D";
+  is_correct: boolean;
+  prompt?: string;
+  options?: string[];
+  explanation?: string;
+  difficulty?: string;
+  skills?: string[];
+  tags?: string[];
+  error?: string;
+}
+
+export interface ExerciseSubmissionResponse {
+  summary: {
+    correct: number;
+    total: number;
+  };
+  results: ExerciseResult[];
+}
+
+export interface AnalysisSubmitRequest {
+  student_id: string;
+  job_id: string;
+  answers: AnswerItem[];
+  grade_level?: string;
+  subject?: string;
+  language?: string;
+  recent_performance?: Record<string, any>;
+  known_misconceptions?: string[];
+  learning_goals?: string[];
+}
+
+export interface AnalysisJob {
+  id: string;
+  status: string;
+  result_payload?: any;
+  error?: string;
+}
+
+/**
+ * Submit answers for a set of exercises and get scoring results
+ */
+export async function submitAnswers(
+  baseUrl: string, 
+  body: ExerciseSubmissionRequest
+): Promise<ExerciseSubmissionResponse> {
+  const res = await fetch(`${baseUrl}/api/v1/personalization/exercises/submit/`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Submit failed: ${res.status} ${text}`);
+  }
+  
+  return res.json();
+}
+
+/**
+ * Submit analysis request to trigger the Analyze & Judge Agent
+ */
+export async function submitAnalysisRequest(
+  baseUrl: string,
+  body: AnalysisSubmitRequest
+): Promise<AnalysisJob> {
+  const res = await fetch(`${baseUrl}/api/v1/personalization/analysis/submit/`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      "X-Idempotency-Key": `analysis_${body.job_id}_${Date.now()}`, // Prevent duplicate submissions
+    },
+    body: JSON.stringify(body),
+  });
+  
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Analysis submission failed: ${res.status} ${text}`);
+  }
+  
+  return res.json();
+}

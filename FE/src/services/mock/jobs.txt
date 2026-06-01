@@ -1,0 +1,21 @@
+export async function createJob(baseUrl: string, payload: any) {
+    const res = await fetch(`${baseUrl}/api/v1/jobs/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Failed to create job");
+    return res.json();
+}
+
+export async function getJob(baseUrl: string, jobId: string) {
+    const res = await fetch(`${baseUrl}/api/v1/jobs/${jobId}/`, { method: "GET" });
+    if (!res.ok) {
+      const text = await res.text();
+      const err = new Error(`Failed to fetch job: ${res.status} ${text}`);
+      // Attach status for callers to branch on
+      (err as any).status = res.status;
+      throw err;
+    }
+    return res.json();
+}

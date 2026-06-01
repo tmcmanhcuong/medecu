@@ -1,0 +1,35 @@
+{
+  "owner": "user_42",
+  "items": [
+    {
+      "type": "flashcard",
+      "from_note": ["note-3849"],
+      "questions": [
+        {
+          "id": "fc-1",
+          "question": "It is True",
+          "done": false,
+          "explanation": "See </[note-3849][l52]>"
+        }
+      ]
+    },
+    {
+      "type": "quiz",
+      "from_book": ["book-23"],
+      "questions": [
+        {
+          "id": "q-1",
+          "options": {
+            "a": "SGD",
+            "b": "Adam",
+            "c": "RMSProp",
+            "d": "Adagrad"
+          },
+          "answer": "b",
+          "latest_answer": "c",
+          "explanation": "Adam combines momentum and RMSProp. </[book-23][p83l2]>"
+        }
+      ]
+    }
+  ]
+}

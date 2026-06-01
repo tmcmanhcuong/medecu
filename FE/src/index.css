@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface-canvas text-ink antialiased transition-colors duration-300;
+    margin: 0;
+    font-family: 'SF Pro Text', 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss03"; /* For Inter to approximate SF Pro 'a' */
+  }
+
+  /* Dark mode root styles */
+  .dark body {
+    @apply bg-surface-tile-1 text-ink-on-dark;
+  }
+}
+
+@layer components {
+  /* No more gradients. We use solid colors and Apple-like typography. */
+
+  .btn-primary {
+    @apply bg-brand text-white px-[22px] py-[11px] rounded-pill font-body text-[17px] hover:bg-brand-focus dark:hover:bg-brand-on-dark hover:scale-95 transition-all duration-200 active:scale-90 inline-flex items-center justify-center;
+  }
+
+  .btn-primary:focus-visible {
+    @apply outline outline-2 outline-brand-focus outline-offset-2;
+  }
+
+  .btn-secondary {
+    @apply text-brand dark:text-brand-on-dark bg-transparent border border-brand dark:border-brand-on-dark px-[22px] py-[11px] rounded-pill font-body text-[17px] hover:bg-brand/10 dark:hover:bg-brand-on-dark/10 hover:scale-95 transition-all duration-200 active:scale-90 inline-flex items-center justify-center;
+  }
+
+  .btn-dark-utility {
+    @apply bg-ink text-ink-on-dark px-[15px] py-[8px] rounded-sm font-body text-[14px] hover:bg-[#333333] dark:hover:bg-[#4d4d4d] hover:scale-95 transition-all duration-200 active:scale-90 inline-flex items-center justify-center;
+  }
+
+  .btn-pearl-capsule {
+    @apply bg-surface-pearl text-ink-muted-80 dark:bg-surface-tile-2 dark:text-ink-muted-48 px-[14px] py-[8px] rounded-md font-body text-[14px] border-[3px] border-divider-soft dark:border-surface-tile-3 hover:bg-[#ebebeb] dark:hover:bg-surface-tile-3 hover:scale-95 transition-all duration-200 active:scale-90 inline-flex items-center justify-center;
+  }
+
+  .card-hover {
+    @apply hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-black/50 transition-all duration-300;
+  }
+
+  .exercise-card {
+    @apply bg-surface-canvas rounded-lg p-6 border border-divider-hairline hover:bg-surface-parchment transition-all;
+  }
+  
+  .dark .exercise-card {
+    @apply bg-surface-tile-2 border-surface-tile-3 hover:bg-surface-tile-3;
+  }
+
+  .option-card {
+    @apply p-3 rounded-lg border border-divider-hairline transition-all duration-200 cursor-pointer;
+  }
+  
+  .dark .option-card {
+    @apply border-surface-tile-3;
+  }
+
+  .option-card:hover {
+    @apply bg-surface-parchment border-brand;
+  }
+  
+  .dark .option-card:hover {
+    @apply bg-surface-tile-3 border-brand-on-dark;
+  }
+}
+
+@layer utilities {
+  /* Custom Scrollbar Styles */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.3);
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.3);
+  }
+
+  /* For Firefox */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.15) transparent;
+  }
+
+  /* Text Selection */
+  ::selection {
+    background-color: rgba(0, 102, 204, 0.2); /* brand color with opacity */
+    color: inherit;
+  }
+}
+
+.prose h1 {
+  @apply text-[34px] leading-[1.47] tracking-[-0.374px] font-semibold text-ink dark:text-ink-on-dark mb-4 mt-6;
+}
+
+.prose h2 {
+  @apply text-[28px] leading-[1.14] tracking-[0.196px] font-normal text-ink dark:text-ink-on-dark mb-3 mt-5;
+}
+
+.prose h3 {
+  @apply text-[21px] leading-[1.19] tracking-[0.231px] font-semibold text-ink dark:text-ink-on-dark mb-2 mt-4;
+}
+
+.prose p {
+  @apply text-[17px] leading-[1.47] tracking-[-0.374px] text-ink dark:text-ink-on-dark mb-3;
+}
+
+.prose ul {
+  @apply text-[17px] leading-[1.47] tracking-[-0.374px] text-ink dark:text-ink-on-dark list-disc pl-5 mb-3;
+}
+
+.prose ol {
+  @apply text-[17px] leading-[1.47] tracking-[-0.374px] text-ink dark:text-ink-on-dark list-decimal pl-5 mb-3;
+}
+
+.prose table {
+  @apply border-collapse w-full;
+}
+
+.prose th {
+  @apply border border-divider-hairline dark:border-surface-tile-3 bg-surface-parchment dark:bg-surface-tile-2 p-2;
+}
+
+.prose td {
+  @apply border border-divider-hairline dark:border-surface-tile-3 p-2;
+}
+
+/* ProseMirror styles (keep existing structure, update colors/fonts) */
+.ProseMirror {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 20px;
+  line-height: 1.47;
+  font-family: 'SF Pro Text', 'Inter', system-ui, sans-serif;
+  font-size: 17px;
+  min-height: 500px;
+  color: theme('colors.ink.DEFAULT');
+}
+
+.dark .ProseMirror {
+  color: theme('colors.ink.on-dark');
+}
+
+.ProseMirror:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.ProseMirror h1 {
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.374px;
+  margin: 16px 0 8px 0;
+}
+
+.ProseMirror h2 {
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 0.196px;
+  margin: 14px 0 7px 0;
+}
+
+.ProseMirror p {
+  margin: 8px 0;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.editor-container .ProseMirror {
+  background: theme('colors.surface.canvas');
+  padding: 40px;
+  margin: 0 auto;
+  max-width: 800px;
+  border: 1px solid theme('colors.divider.hairline');
+  border-radius: theme('borderRadius.lg');
+}
+
+.dark .editor-container .ProseMirror {
+  background: theme('colors.surface.tile-1');
+  border-color: theme('colors.surface.tile-3');
+}

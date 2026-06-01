@@ -1,0 +1,7 @@
+{
+    "id": "4068e84f-a060-4eb4-92fe-fc54b6c347bd",
+    "user_id": "default_user",
+    "title": "RAG",
+    "path": "",
+    "content": "Tôi đã tạo 10 flashcard từ chương sách \"RAG\" dựa hoàn toàn trên thông tin từ tài liệu học tập. Các flashcard bao gồm:\n- Định nghĩa RAG và hai thành phần chính (Retriever và Generator)\n- Hai giai đoạn hoạt động (Retrieval và Generation)\n- Các vấn đề RAG giải quyết (hallucination, dữ liệu riêng, thông tin thời sự)\n- Các kỹ thuật nâng cao (Reranker, Multi-hop, Instruction-tuning, Test-time compute)\n- Tối ưu hóa IR engine cho RAG"
+}

@@ -1,0 +1,48 @@
+{
+    "id": "5d90d0c7-0e84-4ddb-81b0-71c3e26c41fd",
+    "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "title": "aws",
+    "path": "",
+    "content": [
+        {
+            "front": "Amazon Kinesis Data Streams trong Amazon Connect dùng để stream loại dữ liệu gì?",
+            "back": "Stream contact records và agent events (bao gồm agent login, logout, status change, và heartbeat)."
+        },
+        {
+            "front": "Producer trong Kinesis Data Streams là gì?",
+            "back": "Là nguồn tạo và gửi payloads đến Kinesis stream trong thời gian gần thực (near real time)."
+        },
+        {
+            "front": "Consumer trong Kinesis Data Streams là gì?",
+            "back": "Là ứng dụng hoặc dịch vụ đọc và xử lý payloads từ Kinesis stream."
+        },
+        {
+            "front": "Fan out data streaming architecture là gì?",
+            "back": "Kiến trúc phân phối payloads đến nhiều outputs hoặc consumers đồng thời."
+        },
+        {
+            "front": "S3 Frontend Bucket trong kiến trúc AWS lưu trữ gì?",
+            "back": "Chứa toàn bộ giao diện người dùng sau khi build: JS, CSS, HTML."
+        },
+        {
+            "front": "S3 Backend Environment Bucket dùng để làm gì?",
+            "back": "Lưu file .env của backend chứa biến môi trường như database URL, API keys. ECS Fargate kéo file này khi khởi động container."
+        },
+        {
+            "front": "ECR (Elastic Container Registry) trong AWS lưu trữ gì?",
+            "back": "Lưu Docker image của backend sau mỗi lần CI/CD build để phục vụ deployment."
+        },
+        {
+            "front": "Kinesis Firehose hỗ trợ chuyển đổi định dạng dữ liệu nào trước khi lưu vào S3?",
+            "back": "Chuyển đổi từ JSON sang Apache Parquet hoặc Apache ORC."
+        },
+        {
+            "front": "Kinesis Data Streams và Firehose mã hóa dữ liệu như thế nào?",
+            "back": "Sử dụng server-side encryption với customer managed keys. Dữ liệu được mã hóa trước khi ghi và giải mã sau khi đọc."
+        },
+        {
+            "front": "AWS Lambda được sử dụng như thế nào trong Kinesis?",
+            "back": "Để implement logic chuyển đổi dữ liệu cho cả Kinesis Data Streams và Amazon Data Firehose."
+        }
+    ]
+}

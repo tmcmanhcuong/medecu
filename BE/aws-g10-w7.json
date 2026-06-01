@@ -1,0 +1,516 @@
+{
+  "name": "aws-g10-w7",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "bge-m3:latest",
+        "options": {
+          "encodingFormat": "float"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        -192
+      ],
+      "id": "1249be37-cc4d-4fa5-a0d4-05a3f939ddcb",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "6vSEsMRA39iV8wMv",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body['user-prompt'] }}",
+        "options": {
+          "systemMessage": "Bạn là một trợ lý học tập AI. Nhiệm vụ của bạn là giải đáp câu hỏi của người dùng dựa hoàn toàn vào tài liệu học tập nội bộ.\n\n<rules>\n1. BẮT BUỘC SỬ DỤNG: Bạn phải luôn gọi công cụ `retrieve_rag_context` để tìm kiếm tài liệu TRƯỚC KHI đưa ra bất kỳ câu trả lời nào. Tuyệt đối không tự suy đoán hoặc dùng kiến thức nội tại.\n2. PHÂN TÍCH KẾT QUẢ: Chỉ sử dụng các thông tin được trả về từ `retrieve_rag_context` để tổng hợp câu trả lời. \n3. XỬ LÝ LỖI: Nếu công cụ trả về rỗng, hoặc thông tin trả về không giải quyết được câu hỏi, BẮT BUỘC trả lời chính xác câu sau: \"Tôi không tìm thấy thông tin này trong tài liệu.\" Không giải thích thêm.\n4. ĐỊNH DẠNG: Trả lời ngắn gọn, trực tiếp. KHÔNG dùng các cụm từ mở đầu như \"Dựa vào tài liệu tìm được...\" hay \"Theo ngữ cảnh...\".\n</rules>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        160,
+        192
+      ],
+      "id": "95e3b582-79df-4d91-a27f-ceaeb5c3c09f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body['session-id'] }}",
+        "tableName": "mededu_history",
+        "contextWindowLength": 1024
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        416
+      ],
+      "id": "74e14016-b339-404e-8ae0-1a71f2965d12",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "RmuhzuHeYPiX9OgP",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "26479061/claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "26479061/claude-sonnet-4-6"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        416
+      ],
+      "id": "f3f94bb0-46eb-4101-aaef-19f61bc07233",
+      "name": "Claude sonnet 4.6",
+      "credentials": {
+        "openAiApi": {
+          "id": "WHGGwYsNvDqVVT7i",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body['chapter-title'] }}",
+        "options": {
+          "systemMessage": "=Bạn là một chuyên gia trích xuất dữ liệu giáo dục. Nhiệm vụ của bạn là tạo flashcard CHỈ dựa trên thông tin được cung cấp trong thẻ <context>.\n\n<rules>\n1. TUYỆT ĐỐI KHÔNG sử dụng kiến thức bên ngoài. \n2. Chỉ trích xuất các khái niệm quan trọng có mặt trong <context>. \n3. Nếu <context> không chứa đủ thông tin để tạo flashcard, hãy trả về một mảng rỗng: []\n4. Output BẮT BUỘC phải là một mảng JSON (JSON array) hợp lệ, tuân thủ JSON Schema bên dưới.\n5. KHÔNG trả về bất kỳ văn bản, lời chào, hay định dạng markdown (như ```json) nào ngoài chuỗi JSON thuần túy.\n</rules>\n6. Số lượng FlashCard được giới hạn tối đa `{{ $json.body.limit }}`\n\n<json_schema>\n{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"front\": {\n        \"type\": \"string\",\n        \"description\": \"Thuật ngữ, từ khóa hoặc câu hỏi ngắn gọn\"\n      },\n      \"back\": {\n        \"type\": \"string\",\n        \"description\": \"Định nghĩa hoặc câu trả lời chi tiết, ngắn gọn dưới 30 từ\"\n      }\n    },\n    \"required\": [\"front\", \"back\"],\n    \"additionalProperties\": false\n  }\n}\n</json_schema> "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        240,
+        1312
+      ],
+      "id": "50532c09-3583-4ebf-b9d1-2cc52a6a749c",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "26479061/claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "26479061/claude-sonnet-4-6"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        1536
+      ],
+      "id": "b1daaa86-5fb9-4614-a927-5a8db35c3c48",
+      "name": "Claude sonnet 4.",
+      "credentials": {
+        "openAiApi": {
+          "id": "WHGGwYsNvDqVVT7i",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        -192
+      ],
+      "id": "4b0951eb-f2cc-4922-a9e5-7ec16fc1cf66",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "mededu_vector",
+        "embeddingBatchSize": 1024,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        -416
+      ],
+      "id": "8f1ef467-00c7-40e9-bb12-0ff04cb065b2",
+      "name": "Postgres PGVector Store",
+      "credentials": {
+        "postgres": {
+          "id": "RmuhzuHeYPiX9OgP",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 1024,
+        "chunkOverlap": 200
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterTokenSplitter",
+      "typeVersion": 1,
+      "position": [
+        368,
+        16
+      ],
+      "id": "e5f40228-6bbc-48b6-8660-333effb6d34a",
+      "name": "Token Splitter"
+    },
+    {
+      "parameters": {
+        "modelName": "rerank-multilingual-v3.0",
+        "topN": 5
+      },
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "typeVersion": 1,
+      "position": [
+        432,
+        624
+      ],
+      "id": "185de366-6bb5-4004-b981-a0bd3e2f88ab",
+      "name": "Reranker Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "llQwS4VCLk3uNdi2",
+          "name": "Cohere account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "PUT",
+        "path": "3f53a75c-473c-4ac5-a2e2-f2e8a26c3235/uploading-book-content-to-rag",
+        "responseMode": "lastNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        -208
+      ],
+      "id": "68880a53-08b8-4525-8e34-7c423414fe70",
+      "name": "uploading-book-content-to-rag",
+      "webhookId": "3f53a75c-473c-4ac5-a2e2-f2e8a26c3235"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3f53a75c-473c-4ac5-a2e2-f2e8a26c3235/chat-with-rag",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        400
+      ],
+      "id": "a83db2f7-a987-4e91-bca2-7c43aa417ace",
+      "name": "chat-with-rag",
+      "webhookId": "ea42e194-0dfb-4b54-9434-723e687dfd9d"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3f53a75c-473c-4ac5-a2e2-f2e8a26c3235/generating-flashcard",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        1312
+      ],
+      "id": "baeb79fb-455c-4d50-9aac-ad4c3b9473e9",
+      "name": "generating-flashcard",
+      "webhookId": "ea42e194-0dfb-4b54-9434-723e687dfd9d"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Công cụ này tìm kiếm trong cơ sở dữ liệu Vector (Vector Database) để trích xuất các đoạn tài liệu học tập liên quan nhất đến câu hỏi của người dùng. LUÔN LUÔN gọi công cụ này trước khi trả lời bất kỳ câu hỏi nào về kiến thức.",
+        "tableName": "mededu_vector",
+        "topK": 8,
+        "useReranker": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        416
+      ],
+      "id": "6eaf3bfc-44ae-4936-b3b5-6878126b7146",
+      "name": "retrieve_rag_context",
+      "credentials": {
+        "postgres": {
+          "id": "RmuhzuHeYPiX9OgP",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body['chapter-title'] }}",
+        "options": {
+          "systemMessage": "=Bạn là một giáo viên chuyên thiết kế bài kiểm tra. Hãy tạo các câu hỏi trắc nghiệm (MCQ) CHỈ dựa trên nội dung trong thẻ <context>.\n\n<rules>\n1. TUYỆT ĐỐI KHÔNG bịa thông tin. Mọi câu hỏi, đáp án đúng và giải thích phải bám sát 100% vào <context>.\n2. Nếu <context> quá ngắn hoặc không chứa kiến thức trọng tâm để tạo câu hỏi, hãy trả về một mảng rỗng: []\n3. Mỗi câu hỏi phải có chính xác 4 lựa chọn, chỉ 1 lựa chọn đúng. Giải thích dưới 20 từ.\n4. Output BẮT BUỘC phải là một mảng JSON (JSON array) hợp lệ, tuân thủ JSON Schema bên dưới.\n5. KHÔNG bọc JSON trong markdown tag. Bắt đầu ngay với ký tự `[` và kết thúc bằng `]`.\n6. Số lượng FlashCard được giới hạn tối đa `{{ $json.body.limit }}`\n</rules>\n\n<json_schema>\n{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"question\": {\n        \"type\": \"string\",\n        \"description\": \"Nội dung câu hỏi trắc nghiệm\"\n      },\n      \"options\": {\n        \"type\": \"array\",\n        \"items\": { \"type\": \"string\" },\n        \"minItems\": 4,\n        \"maxItems\": 4,\n        \"description\": \"Mảng chứa 4 lựa chọn đáp án\"\n      },\n      \"correct_index\": {\n        \"type\": \"integer\",\n        \"minimum\": 0,\n        \"maximum\": 3,\n        \"description\": \"Chỉ mục (0-3) của đáp án đúng trong mảng options\"\n      },\n      \"explanation\": {\n        \"type\": \"string\",\n        \"description\": \"Giải thích ngắn gọn tại sao đáp án đó đúng, dựa theo context\"\n      }\n    },\n    \"required\": [\"question\", \"options\", \"correct_index\", \"explanation\"],\n    \"additionalProperties\": false\n  }\n}\n</json_schema>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        240,
+        800
+      ],
+      "id": "bdfff376-94e7-4863-ad91-52c9a8faf862",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "26479061/claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "26479061/claude-sonnet-4-6"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        1024
+      ],
+      "id": "f2b8bb55-fe44-47a4-97c9-4a3579f6ffa4",
+      "name": "Claude sonnet 4.1",
+      "credentials": {
+        "openAiApi": {
+          "id": "WHGGwYsNvDqVVT7i",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3f53a75c-473c-4ac5-a2e2-f2e8a26c3235/generating-quizz",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        912
+      ],
+      "id": "a622804c-8e63-4dac-8cdd-4b9cbda680a4",
+      "name": "generating-quizz",
+      "webhookId": "ea42e194-0dfb-4b54-9434-723e687dfd9d"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "retrieve_rag_context",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude sonnet 4.6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude sonnet 4.": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reranker Cohere": {
+      "ai_reranker": [
+        [
+          {
+            "node": "retrieve_rag_context",
+            "type": "ai_reranker",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "uploading-book-content-to-rag": {
+      "main": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "chat-with-rag": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generating-flashcard": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "retrieve_rag_context": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude sonnet 4.1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generating-quizz": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4e96c0b3-7b12-445a-95d0-92a410e59582",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "434fb4a51fe7deb05ca2acd4e32719e2c42a31b1aa915338de04b453a165fac9"
+  },
+  "id": "mSfqvxVLILJzH2fn",
+  "tags": []
+}
