@@ -11,7 +11,7 @@ permissions:
   contents: read       # Bắt buộc để checkout code
 
 env:
-  AWS_REGION: ap-east-1  # Sửa lại vùng AWS tương ứng của bạn nếu khác
+  AWS_REGION: us-east-1  # Sửa lại vùng AWS tương ứng của bạn nếu khác
   ECR_REPOSITORY: medecu/images
   ECS_CLUSTER: medecu-cluster
   ECS_SERVICE: medecu-task-service
