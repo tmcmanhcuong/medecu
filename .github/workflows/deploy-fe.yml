@@ -37,6 +37,11 @@ jobs:
           npm ci
 
       - name: Build frontend
+        env:
+          VITE_SERVER_BACKEND: /api/v1
+          VITE_QUIZ_FLASH_API_URL: https://duckq1-n8n.duckdns.org/webhook/970e5eb7-c672-475e-9e8c-5e49967d2718/learning
+          VITE_CHAT_RAG_API_URL: https://duckq1-n8n.duckdns.org/webhook/f75be7aa-52f0-496d-b8d6-31a1ec1afaaa/chat-with-rag/
+          VITE_OUTLINE_API_URL: https://duckq1-n8n.duckdns.org/webhook/970e5eb7-c672-475e-9e8c-5e49967d2718/outline
         run: |
           cd FE
           npm run build
