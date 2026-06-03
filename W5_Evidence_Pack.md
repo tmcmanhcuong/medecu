@@ -71,9 +71,16 @@
 
 5. Tổng quan kiến trúc VPC Hệ thống được triển khai trên một VPC duy nhất với tên medecu-vpc. Kiến trúc mạng được thiết kế theo mô hình phân tầng nhằm tách biệt các thành phần public, private (ECS/EFS), và database để tăng cường bảo mật và khả năng quản lý traffic.
 
-a) Thông tin VPC Tên VPC: medecu-vpc Mô hình: Single VPC Architecture Triển khai: Multi-AZ Region: ap-southeast-1
+a) Thông tin VPC:
+- Tên VPC: `medecu-vpc`
+- Mô hình: Single VPC Architecture
+- Triển khai: Multi-AZ
+- Region: ap-southeast-1
 
-![image](public/vpc.png)b) Thiết kế Subnet Hệ thống sử dụng tổng cộng 6 subnet hoạt động, được phân bổ trên 2 Availability Zone:
+![image](./public/vpc.png)
+
+b) Thiết kế Subnet:
+Hệ thống sử dụng tổng cộng 6 subnet hoạt động, được phân bổ trên 2 Availability Zone:
 
 - ap-southeast-1a
 - ap-southeast-1b
@@ -95,22 +102,26 @@ Mỗi AZ bao gồm:
   - `medecu-rds-a` - CIDR: `10.0.5.0/24` (AZ-a)
   - `medecu-rds-b` - CIDR: `10.0.6.0/24` (AZ-b)
 
-c) Route Tables Hệ thống sử dụng 3 route table riêng biệt để quản lý traffic cho từng loại subnet:
+c) Route Tables:
+Hệ thống sử dụng 3 route table riêng biệt để quản lý traffic cho từng loại subnet:
 
-- Public Route Table: `medecu-rt-public`
+- **Public Route Table:** `medecu-rt-public`
 
-  ![image](public/medecu-rt-public.png)
-  Chức năng: Định tuyến internet outbound traffic (`0.0.0.0/0`) trực tiếp thông qua Internet Gateway (`medecu-igw`).
+  ![image](./public/medecu-rt-public.png)
 
-- Private Route Table: `medecu-rt-ecs`
+  *Chức năng:* Định tuyến internet outbound traffic (`0.0.0.0/0`) trực tiếp thông qua Internet Gateway (`medecu-igw`).
 
-  ![image](public/medecu-rt-ecs.png)
-  Chức năng: Chuyển toàn bộ outbound traffic (`0.0.0.0/0`) từ các Private App Subnet tới NAT Gateway (`medecu-natgw`) để ECS tasks kết nối an toàn ra các API/dịch vụ ngoài (như S3, Bedrock).
+- **Private Route Table:** `medecu-rt-ecs`
 
-- Database Route Table: `medecu-rt-database`
+  ![image](./public/medecu-rt-ecs.png)
 
-  ![image](public/medecu-rt-db.png)
-  Chức năng: Tách biệt hoàn toàn traffic database khỏi public network (không cấu hình route outbound `0.0.0.0/0`), chỉ cho phép định tuyến nội bộ (local) trong VPC để đảm bảo an toàn bảo mật dữ liệu.
+  *Chức năng:* Chuyển toàn bộ outbound traffic (`0.0.0.0/0`) từ các Private App Subnet tới NAT Gateway (`medecu-natgw`) để ECS tasks kết nối an toàn ra các API/dịch vụ ngoài (như S3, Bedrock).
+
+- **Database Route Table:** `medecu-rt-database`
+
+  ![image](./public/medecu-rt-db.png)
+
+  *Chức năng:* Tách biệt hoàn toàn traffic database khỏi public network (không cấu hình route outbound `0.0.0.0/0`), chỉ cho phép định tuyến nội bộ (local) trong VPC để đảm bảo an toàn bảo mật dữ liệu.
 
 2. Network Connectivity
 
@@ -169,9 +180,10 @@ a) VPC Flow Logs
 > [!NOTE] 💡
 > **Lưu ý về AWS Network Firewall ở tài khoản Free Tier:**
 > Ban đầu em có định hướng triển khai Path A — AWS Network Firewall. Tuy nhiên, do giới hạn tài khoản AWS Free Tier / Sandbox hiện tại (gặp lỗi thiếu đăng ký dịch vụ - Subscription Required / Access Denied), em đã chuyển sang phương án bảo mật tối ưu theo Path B — Security Groups & Network ACLs Hardening.
->
-> Minh chứng lỗi không sử dụng được Network Firewall ở tài khoản Free Tier:
-> ![image](public/network-firewall-error.png)
+
+Minh chứng lỗi không sử dụng được Network Firewall ở tài khoản Free Tier:
+
+![image](./public/network-firewall-error.png)
 
 ---
 
