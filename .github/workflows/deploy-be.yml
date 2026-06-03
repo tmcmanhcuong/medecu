@@ -13,8 +13,8 @@ permissions:
 env:
   AWS_REGION: ap-southeast-1  # Sửa lại vùng AWS tương ứng của bạn nếu khác
   ECR_REPOSITORY: medecu/images
-  ECS_CLUSTER: medecu-cluster
-  ECS_SERVICE: medecu-task-service
+  ECS_CLUSTER: medecu-clusters
+  ECS_SERVICE: medecu-task-definition-service-4ri0kz65
   CONTAINER_NAME: medecu-containers
   ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_ARN }}
 
