@@ -1,0 +1,80 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "medecu-containers",
+      "image": "812527291603.dkr.ecr.ap-southeast-1.amazonaws.com/medecu/images:latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp",
+          "name": "medecu-containers-8000-tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {"name": "FLASH_PATH", "value": "/mnt/efs/flashcard_indexes"},
+        {"name": "AWS_REGION", "value": "ap-southeast-1"},
+        {"name": "AGENTCORE_CHAT_AGENT_ALIAS_ID", "value": "WI23VHGTDL"},
+        {"name": "AWS_KB_ID", "value": "C599TNO5PN"},
+        {"name": "AWS_S3_BUCKET_NAME", "value": "medecu-data-source"},
+        {"name": "AGENTCORE_CHAT_AGENT_ID", "value": "ERC03TBD70"},
+        {"name": "S3_BUCKET_NAME", "value": "medecu-data-source"},
+        {"name": "AGENTCORE_FLASHCARD_AGENT_ALIAS_ID", "value": "TCSRRGBNWN"},
+        {"name": "AGENTCORE_KNOWLEDGE_BASE_ID", "value": "C599TNO5PN"},
+        {"name": "QUIZZ_PATH", "value": "/mnt/efs/quizz_indexes"},
+        {"name": "DATABASE_URL", "value": "postgresql://postgres:admin123@medecu-posgres.cd6asa6icqxb.ap-southeast-1.rds.amazonaws.com:5432/MedEdu"},
+        {"name": "AGENTCORE_QUIZ_AGENT_ALIAS_ID", "value": "KRYMFDVP0R"},
+        {"name": "AGENTCORE_FLASHCARD_AGENT_ID", "value": "F80FKASMRV"},
+        {"name": "EXTRACTION_SERVICE_URL", "value": "http://127.0.0.1:8001/marker"},
+        {"name": "AI_RUNTIME", "value": "agentcore"},
+        {"name": "FILE_STORAGE_MODE", "value": "s3"},
+        {"name": "AWS_KB_DATA_SOURCE_ID", "value": "CENLFVB0AJ"},
+        {"name": "MARKDOWN_PATH", "value": "/mnt/efs/markdown_indexes"},
+        {"name": "AGENTCORE_QUIZ_AGENT_ID", "value": "BCOQX4GQEA"}
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "medecu-efs-volume",
+          "containerPath": "/mnt/efs",
+          "readOnly": false
+        }
+      ],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/medecu-task-definition",
+          "awslogs-create-group": "true",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "family": "medecu-task-definition",
+  "taskRoleArn": "arn:aws:iam::812527291603:role/medecu-ecs-task-role",
+  "executionRoleArn": "arn:aws:iam::812527291603:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "volumes": [
+    {
+      "name": "medecu-efs-volume",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "fs-04c61aeb84043e978",
+        "rootDirectory": "/",
+        "transitEncryption": "ENABLED"
+      }
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "3072",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  }
+}
