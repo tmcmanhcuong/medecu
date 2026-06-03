@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.v1 import api_router
 from core import validate_ai_runtime_config
 
-# Application instance for MedEdu API
+# Application instance for MedEdu API (Trigger deploy)
 app = FastAPI(title="MedEdu")
 
 # Configure CORS Middleware
