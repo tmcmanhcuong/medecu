@@ -35,9 +35,13 @@
 
 **Action đại diện chứng minh app hoạt động:**
 
-![image](public/app-activation.png)**Kiến trúc hệ thống trên cloud:**
+![image](public/app-activation.png)
 
-![image](https://github.com/user-attachments/assets/51687d47-757b-495e-9f59-2ae93d5412e5)Link to diagram: https://app.diagrams.net/#G1uAov8ZokNK1LBo_zqMDtdrT4d8BFUOMf#%7B%22pageId%22%3A%22_wFuGsi9mvh8PrvmbIV1%22%7D
+**Kiến trúc hệ thống trên cloud:**
+
+![image](./public/architectdiagram.png)
+
+Link to diagram: https://app.diagrams.net/#G1uAov8ZokNK1LBo_zqMDtdrT4d8BFUOMf#%7B%22pageId%22%3A%22_wFuGsi9mvh8PrvmbIV1%22%7D
 
 ---
 
@@ -72,6 +76,7 @@
 5. Tổng quan kiến trúc VPC Hệ thống được triển khai trên một VPC duy nhất với tên medecu-vpc. Kiến trúc mạng được thiết kế theo mô hình phân tầng nhằm tách biệt các thành phần public, private (ECS/EFS), và database để tăng cường bảo mật và khả năng quản lý traffic.
 
 a) Thông tin VPC:
+
 - Tên VPC: `medecu-vpc`
 - Mô hình: Single VPC Architecture
 - Triển khai: Multi-AZ
@@ -79,8 +84,7 @@ a) Thông tin VPC:
 
 ![image](./public/vpc.png)
 
-b) Thiết kế Subnet:
-Hệ thống sử dụng tổng cộng 6 subnet hoạt động, được phân bổ trên 2 Availability Zone:
+b) Thiết kế Subnet: Hệ thống sử dụng tổng cộng 6 subnet hoạt động, được phân bổ trên 2 Availability Zone:
 
 - ap-southeast-1a
 - ap-southeast-1b
@@ -102,26 +106,25 @@ Mỗi AZ bao gồm:
   - `medecu-rds-a` - CIDR: `10.0.5.0/24` (AZ-a)
   - `medecu-rds-b` - CIDR: `10.0.6.0/24` (AZ-b)
 
-c) Route Tables:
-Hệ thống sử dụng 3 route table riêng biệt để quản lý traffic cho từng loại subnet:
+c) Route Tables: Hệ thống sử dụng 3 route table riêng biệt để quản lý traffic cho từng loại subnet:
 
 - **Public Route Table:** `medecu-rt-public`
 
   ![image](./public/medecu-rt-public.png)
 
-  *Chức năng:* Định tuyến internet outbound traffic (`0.0.0.0/0`) trực tiếp thông qua Internet Gateway (`medecu-igw`).
+*Chức năng:* Định tuyến internet outbound traffic (`0.0.0.0/0`) trực tiếp thông qua Internet Gateway (`medecu-igw`).
 
 - **Private Route Table:** `medecu-rt-ecs`
 
   ![image](./public/medecu-rt-ecs.png)
 
-  *Chức năng:* Chuyển toàn bộ outbound traffic (`0.0.0.0/0`) từ các Private App Subnet tới NAT Gateway (`medecu-natgw`) để ECS tasks kết nối an toàn ra các API/dịch vụ ngoài (như S3, Bedrock).
+*Chức năng:* Chuyển toàn bộ outbound traffic (`0.0.0.0/0`) từ các Private App Subnet tới NAT Gateway (`medecu-natgw`) để ECS tasks kết nối an toàn ra các API/dịch vụ ngoài (như S3, Bedrock).
 
 - **Database Route Table:** `medecu-rt-database`
 
   ![image](./public/medecu-rt-db.png)
 
-  *Chức năng:* Tách biệt hoàn toàn traffic database khỏi public network (không cấu hình route outbound `0.0.0.0/0`), chỉ cho phép định tuyến nội bộ (local) trong VPC để đảm bảo an toàn bảo mật dữ liệu.
+*Chức năng:* Tách biệt hoàn toàn traffic database khỏi public network (không cấu hình route outbound `0.0.0.0/0`), chỉ cho phép định tuyến nội bộ (local) trong VPC để đảm bảo an toàn bảo mật dữ liệu.
 
 2. Network Connectivity
 
@@ -131,17 +134,21 @@ Hệ thống sử dụng:
 
   - medecu-igw
 
-    ![image](https://github.com/user-attachments/assets/a3f5b7b2-6ffb-4e2d-b707-518255109516)Chức năng:
+    ![image](./public/medecu-igw.png)
 
-  - Kết nối public subnet với Internet.
+Chức năng:
+
+- Kết nối public subnet với Internet.
 
 - NAT Gateway
 
   - `medecu-natgw`
 
-    ![image](https://github.com/user-attachments/assets/d64881f0-4fc4-41b3-ae88-3a7e0c4494eb)Chức năng:
+    ![image](./public/medecu-natgw.png)
 
-  - Cho phép private subnet truy cập Internet outbound mà không expose trực tiếp ra public Internet.
+Chức năng:
+
+- Cho phép private subnet truy cập Internet outbound mà không expose trực tiếp ra public Internet.
 
 5. Multi-AZ Architecture
 
@@ -165,11 +172,13 @@ a) VPC Flow Logs
 
 - Hỗ trợ troubleshooting và security monitoring
 
-  ![image](https://github.com/user-attachments/assets/5fc6ed81-87a6-4465-ba0d-2e7204777da0)
+  ![image](./public/loggroups.png)
 
 **Screenshot - VPC Flow Logs trong CloudWatch:**
 
-![image](https://github.com/user-attachments/assets/afc3adc9-119c-43a9-a882-52bece877e18)\## 3. MH2 — Network Security Hardening (Bảo mật mạng & Cấu hình SG+NACL)
+![image](./public/logevents.png)
+
+## 3. MH2 — Network Security Hardening (Bảo mật mạng & Cấu hình SG+NACL)
 
 ## Lựa chọn Path
 
@@ -178,8 +187,7 @@ a) VPC Flow Logs
 ☑ Path B — Security Groups & Network ACLs Hardening (Kiểm soát truy cập mạng nghiêm ngặt ở cấp độ Subnet và Instance)
 
 > [!NOTE] 💡
-> **Lưu ý về AWS Network Firewall ở tài khoản Free Tier:**
-> Ban đầu em có định hướng triển khai Path A — AWS Network Firewall. Tuy nhiên, do giới hạn tài khoản AWS Free Tier / Sandbox hiện tại (gặp lỗi thiếu đăng ký dịch vụ - Subscription Required / Access Denied), em đã chuyển sang phương án bảo mật tối ưu theo Path B — Security Groups & Network ACLs Hardening.
+> Lưu ý về AWS Network Firewall ở tài khoản Free Tier: Ban đầu em có định hướng triển khai Path A — AWS Network Firewall. Tuy nhiên, do giới hạn tài khoản AWS Free Tier / Sandbox hiện tại (gặp lỗi thiếu đăng ký dịch vụ - Subscription Required / Access Denied), em đã chuyển sang phương án bảo mật tối ưu theo Path B — Security Groups & Network ACLs Hardening.
 
 Minh chứng lỗi không sử dụng được Network Firewall ở tài khoản Free Tier:
 
@@ -218,11 +226,33 @@ Mỗi lớp tài nguyên được đặt trong một Security Group riêng biệ
 
 # c) Network ACLs Hardening
 
-Thiết lập các quy tắc kiểm soát tại Network ACL (NACL) ở cấp độ Subnet để bổ sung thêm một lớp bảo vệ bên ngoài Security Groups:
+Do Network ACLs (NACL) hoạt động theo cơ chế **Stateless** (không tự lưu trạng thái kết nối), hệ thống thiết lập các quy tắc kiểm soát chặt chẽ cho cả chiều đi (Outbound) và chiều về (Inbound) ở cấp độ Subnet để bổ sung thêm một lớp bảo vệ vững chắc bên ngoài Security Groups:
 
-- **Subnet Database:** Chặn mọi traffic Inbound/Outbound ngoại trừ kết nối với Subnet ECS qua port `5432`.
-- **Subnet ECS (Private):** Chỉ cho phép traffic Inbound từ Subnet Public (ALB) và Outbound đến Subnet Public (NAT Gateway) cùng các cổng dịch vụ HTTPS (`443`) của AWS.
-- **Quy tắc chặn mặc định (Default Deny):** Áp dụng rule deny mặc định cho tất cả các port không sử dụng (như SSH `22`, RDP `3389`) từ bên ngoài vào hệ thống.
+- **Subnet Public (ALB & NAT Gateway):**
+
+  - **Inbound:**
+    - Cho phép nhận traffic HTTP (`80`) và HTTPS (`443`) từ `0.0.0.0/0`.
+    - Cho phép nhận dữ liệu phản hồi (cổng tạm thời `1024-65535`) từ `0.0.0.0/0`.
+    - Chặn rõ ràng (Explicit Deny) cổng quản trị SSH (`22`) và RDP (`3389`) từ `0.0.0.0/0` để bảo mật tối đa.
+  - **Outbound:**
+    - Cho phép gửi traffic HTTP (`80`) và HTTPS (`443`) ra `0.0.0.0/0`.
+    - Cho phép trả dữ liệu (cổng tạm thời `1024-65535`) ra `0.0.0.0/0`.
+    - Cho phép chuyển tiếp request tới App Subnet trên port `8000` (đích đến ECS tasks).
+
+- **Subnet ECS (Private App Subnet):**
+
+  - **Inbound:**
+    - Cho phép nhận traffic từ Public Subnet (ALB) trên port `8000`.
+    - Cho phép nhận dữ liệu phản hồi (cổng tạm thời `1024-65535`) từ `0.0.0.0/0` (phản hồi từ RDS, EFS, NAT Gateway và các dịch vụ AWS APIs).
+  - **Outbound:**
+    - Cho phép gửi traffic tới Database Subnet trên port `5432`.
+    - Cho phép gửi traffic HTTP (`80`) và HTTPS (`443`) đi ra Internet qua NAT Gateway.
+    - Cho phép phản hồi traffic (cổng tạm thời `1024-65535`) ngược về Public Subnet (đích đến ALB).
+
+- **Subnet Database (Private DB Subnet):**
+
+  - **Inbound:** Chỉ cho phép cổng PostgreSQL (`5432`) đi vào từ dải CIDR của Subnet ECS, chặn toàn bộ các dải IP khác.
+  - **Outbound:** Chỉ cho phép phản hồi dữ liệu truy vấn (cổng tạm thời `1024-65535`) đi ra dải CIDR của Subnet ECS, không cho phép kết nối ra Internet.
 
 ---
 
@@ -236,7 +266,16 @@ Toàn bộ lưu lượng mạng giữa các Security Groups và Subnets được
 
 #### Cấu hình EFS
 
-![image](https://github.com/user-attachments/assets/5493e7fc-a5d7-48d8-8967-0b411f3e7519)| Thông tin | Chi tiết | | --- | --- | | **Tên** | medecu-efs | | **Region** | ap-southeast-1 | | **Performance Mode** | General Purpose | | **Throughput Mode** | Bursting | | **Encryption at Rest** | ✅ Enabled (KMS) | | **Lifecycle Policy** | Transition to IA after 30 days, Transition into Archive after 90 days |
+![image](./public/efsconfig.png)
+
+| Thông tin | Chi tiết |
+| --- | --- |
+| **Tên** | medecu-efs |
+| **Region** | ap-southeast-1 |
+| **Performance Mode** | General Purpose |
+| **Throughput Mode** | Bursting |
+| **Encryption at Rest** | ✅ Enabled (KMS) |
+| **Lifecycle Policy** | Transition to IA after 30 days, Transition into Archive after 90 days |
 
 **Mount Targets:**
 
@@ -247,11 +286,15 @@ Toàn bộ lưu lượng mạng giữa các Security Groups và Subnets được
 
 **Security Group của Mount Target:**
 
-![image](https://github.com/user-attachments/assets/4b47ac65-932e-4702-a88e-8b50f05b271c)\#### Mount EFS trên ECS
+![image](./public/sgmounttarget.png)
 
-![image](https://github.com/user-attachments/assets/665f60f4-4895-4f54-b0cc-64fc6f41bb02)**Screenshot - EFS Mount Successful:**
+#### Mount EFS trên ECS
 
-![image](https://github.com/user-attachments/assets/8b4178d2-8d5c-4529-a09b-6b84e90b31e7)\#### Write & Read Test
+**Screenshot - EFS Mount Successful:**
+
+![image](https://github.com/user-attachments/assets/8b4178d2-8d5c-4529-a09b-6b84e90b31e7)
+
+#### Write & Read Test
 
 Để xác minh Amazon EFS được mount và hoạt động chính xác giữa nhiều ECS tasks, em thực hiện kiểm tra ghi và đọc dữ liệu thông qua các ECS containers khác nhau.
 
@@ -265,7 +308,9 @@ EFS được cấu hình làm shared storage và mount vào ECS containers thôn
 
 #### Screenshot — ECS Task Definition Mount Point
 
-![image](https://github.com/user-attachments/assets/3c2f652c-91f5-4a1f-81dc-4cc04fbd93f9)**Mô tả screenshot cần capture:**
+![image](./public/volumetask.png)
+
+**Mô tả screenshot cần capture:**
 
 - ECS Task Definition
 
@@ -274,7 +319,7 @@ EFS được cấu hình làm shared storage và mount vào ECS containers thôn
 - Hiển thị:
 
   - EFS volume configuration
-  - Mount point `/mnt/efs/shared`
+  - Mount point `/mnt/efs/`
   - EFS filesystem ID
 
 ---
@@ -305,7 +350,9 @@ Kết quả cho thấy filesystem EFS đã được mount tại:
 
 #### Screenshot — EFS Mounted in First ECS Container
 
-![image](https://github.com/user-attachments/assets/b73d28ea-592f-4e87-bc08-d2c4373fdaba)**Mô tả screenshot cần capture:**
+![image](https://github.com/user-attachments/assets/b73d28ea-592f-4e87-bc08-d2c4373fdaba)
+
+**Mô tả screenshot cần capture:**
 
 - terminal bên trong container
 
@@ -339,7 +386,9 @@ Việc tạo file thành công xác nhận ECS task có quyền ghi dữ liệu 
 
 #### Screenshot — Write File to EFS
 
-![image](https://github.com/user-attachments/assets/6c91bc64-f908-496f-aecc-3b2455f3af94)**Mô tả screenshot cần capture:**
+![image](https://github.com/user-attachments/assets/6c91bc64-f908-496f-aecc-3b2455f3af94)
+
+**Mô tả screenshot cần capture:**
 
 - Terminal bên trong ECS container đầu tiên
 
@@ -378,7 +427,9 @@ Kết quả cho thấy file được tạo từ container đầu tiên đã xu�
 
 #### Screenshot — EFS Mounted in Second ECS Container
 
-![image](https://github.com/user-attachments/assets/d3451ef2-2420-4c24-a243-aacbd098aa5d)**Mô tả screenshot cần capture:**
+![image](https://github.com/user-attachments/assets/d3451ef2-2420-4c24-a243-aacbd098aa5d)
+
+**Mô tả screenshot cần capture:**
 
 - terminal bên trong container thứ hai
 
@@ -391,7 +442,9 @@ Kết quả cho thấy file được tạo từ container đầu tiên đã xu�
 
 #### Screenshot — Read File from Second Container
 
-![image](https://github.com/user-attachments/assets/c88e4e3e-a13c-4b67-94d2-9e17fd1b17ac)**Mô tả screenshot cần capture:**
+![image](https://github.com/user-attachments/assets/c88e4e3e-a13c-4b67-94d2-9e17fd1b17ac)
+
+**Mô tả screenshot cần capture:**
 
 - Terminal bên trong ECS container thứ hai
 
@@ -409,9 +462,13 @@ Kết quả cho thấy file được tạo từ container đầu tiên đã xu�
 
 **Negative security test cho EFS: Không thể mount EFS vào EC2 instance, do security group không cho phép kết nôi từ EC2 Instance.**
 
-![image](https://github.com/user-attachments/assets/f1d36541-4392-4931-bcb1-95fea8d0beea)**Ngược lại, nếu security group của efs cho phép kết nối từ EC2 instance thì có thể mount thành công:**
+![image](https://github.com/user-attachments/assets/f1d36541-4392-4931-bcb1-95fea8d0beea)
 
-![image](https://github.com/user-attachments/assets/a0e3bf94-f64d-4dc4-80a5-4d3e64967dd3)\---
+**Ngược lại, nếu security group của efs cho phép kết nối từ EC2 instance thì có thể mount thành công:**
+
+![image](https://github.com/user-attachments/assets/a0e3bf94-f64d-4dc4-80a5-4d3e64967dd3)
+
+---
 
 ## Backup Plan và Restore Verification
 
@@ -457,14 +514,15 @@ Ngoài backup plan chính do em cấu hình, hệ thống còn có automatic bac
 
 #### Screenshot — Backup Plans
 
-![image](https://github.com/user-attachments/assets/eace3225-1072-4188-8533-e97bae74a351)**Mô tả screenshot cần capture:**
+![image](./public/backupplan.png)
+
+**Mô tả screenshot cần capture:**
 
 - AWS Console → AWS Backup → Backup Plans
 
 - Hiển thị:
 
   - `medecu-backup-plan`
-  - `aws/efs/automatic-backup-plan`
 
 - Hiển thị trạng thái active
 
@@ -488,7 +546,9 @@ Backup vault được sử dụng để lưu trữ recovery points của toàn b
 
 #### Screenshot — Backup Vault
 
-![image](https://github.com/user-attachments/assets/d3728182-daf5-4dd9-95b5-2d2c4161fbe1)**Mô tả screenshot cần capture:**
+![image](./public/backupvault.png)
+
+**Mô tả screenshot cần capture:**
 
 - AWS Console → AWS Backup → Backup Vaults
 
@@ -526,7 +586,9 @@ AWS Backup được cấu hình để backup nhiều tài nguyên production qua
 
 #### Screenshot — Resource Assignment
 
-![image](https://github.com/user-attachments/assets/3d968f7e-2329-4e4e-b8e5-886fc4178ca4)**Mô tả screenshot cần capture:**
+![image](./public/protectedres.png)
+
+**Mô tả screenshot cần capture:**
 
 - AWS Console → AWS Backup → Protected Resources hoặc Resource Assignments
 
@@ -543,7 +605,9 @@ AWS Backup được cấu hình để backup nhiều tài nguyên production qua
 
 #### Backup Rule
 
-![image](https://github.com/user-attachments/assets/bc248314-4d53-4784-8a18-d5c1ce1202a3)\---
+![image](./public/medecubackup.png)
+
+---
 
 **Mô tả screenshot cần capture:**
 
@@ -578,7 +642,9 @@ Recovery points được lưu trữ trong `medecu-backup-vault`.
 
 #### Screenshot — Recovery Points
 
-![image](https://github.com/user-attachments/assets/73d5acfa-7de9-479b-86f5-20b28bb968ae)**Mô tả screenshot cần capture:**
+![image](./public/recoverypoint.png)
+
+**Mô tả screenshot cần capture:**
 
 - AWS Console → AWS Backup → Recovery Points
 
@@ -627,7 +693,9 @@ Restore test được thực hiện bằng cách khôi phục EFS từ recovery 
 
 #### Screenshot — Restore Job Completed
 
-![image](https://github.com/user-attachments/assets/4ed97c89-4005-4fb0-81fb-a921f96d8f2b)**Mô tả screenshot cần capture:**
+![image](https://github.com/user-attachments/assets/4ed97c89-4005-4fb0-81fb-a921f96d8f2b)
+
+**Mô tả screenshot cần capture:**
 
 - AWS Console → AWS Backup → Restore Jobs
 
@@ -641,7 +709,9 @@ Restore test được thực hiện bằng cách khôi phục EFS từ recovery 
 
 #### Screenshot — Data Before Restore
 
-![image](https://github.com/user-attachments/assets/47997b29-411a-459c-b258-c8b8979c3839)**Mô tả screenshot cần capture:**
+![image](https://github.com/user-attachments/assets/47997b29-411a-459c-b258-c8b8979c3839)
+
+**Mô tả screenshot cần capture:**
 
 - Terminal hoặc file browser trước khi thực hiện restore
 
@@ -657,7 +727,9 @@ Restore test được thực hiện bằng cách khôi phục EFS từ recovery 
 
 #### Screenshot — Data After Restore
 
-![image](https://github.com/user-attachments/assets/4a1bfb2d-db7d-4019-b4bc-39b77ce135b1)**Mô tả screenshot cần capture:**
+![image](https://github.com/user-attachments/assets/4a1bfb2d-db7d-4019-b4bc-39b77ce135b1)
+
+**Mô tả screenshot cần capture:**
 
 - Terminal hoặc file browser sau khi restore EFS
 
@@ -699,757 +771,6 @@ Kết quả này chứng minh:
 
 ---
 
-## 5. MH4 — API Gateway trước Lambda (Xây dựng API Surface có Authentication và Throttling)
-
-### Tổng quan triển khai
-
-Trong MH4, em đã triển khai API Gateway phía trước Lambda function hiện có nhằm xây dựng một API surface chuẩn hóa cho backend service. Trước khi triển khai MH4, Lambda được gọi trực tiếp từ application code thông qua AWS SDK, chưa có cơ chế authentication, throttling hoặc endpoint public an toàn cho frontend/backend integration.
-
-Lambda được sử dụng trong MH4 là function health check của hệ thống backend.
-
----
-
-### Lambda Function được sử dụng
-
-| Thông tin | Chi tiết |
-| --- | --- |
-| **Function Name** | medecu-lambda-healthCheck |
-| **Runtime** | Python 3.11 |
-| **Handler** | lambda_function.lambda_handler |
-| **Mục đích** | Kiểm tra trạng thái backend services |
-| **Invocation sau MH4** | Thông qua API Gateway Lambda Proxy Integration |
-
-Function này được sử dụng để trả về trạng thái hoạt động của các backend components và phục vụ monitoring endpoint cho hệ thống.
-
----
-
-### API Gateway Configuration
-
-#### API Information
-
-| Thông tin | Chi tiết |
-| --- | --- |
-| **API Type** | REST API |
-| **Stage** | prod |
-| **Integration Type** | Lambda Proxy Integration |
-| **Authentication** | API Key |
-| **Throttling** | Usage Plan |
-| **CORS** | Enabled |
-
-API Gateway được cấu hình làm public API layer phía trước Lambda function.
-
----
-
-#### API Routes
-
-| Method | Endpoint | Integration |
-| --- | --- | --- |
-| GET | `/health` | Lambda Proxy → medecu-lambda-healthCheck |
-| GET | `/health-check` | Lambda Proxy → medecu-lambda-healthCheck |
-
-Cả hai endpoint đều được tích hợp thông qua Lambda Proxy Integration.
-
----
-
-#### Screenshot — API Gateway Overview
-
-![image](https://github.com/user-attachments/assets/4cba441e-f4a8-4f73-9faf-42e1859b4a1e)\##### Mô tả screenshot cần capture
-
-- AWS Console → API Gateway
-
-- Hiển thị tên API
-
-- Hiển thị stage `prod`
-
-- Hiển thị các routes:
-
-  - `/health`
-  - `/health-check`
-
----
-
-# Lambda Proxy Integration
-
-API Gateway được cấu hình sử dụng Lambda Proxy Integration để chuyển toàn bộ request context trực tiếp xuống Lambda function.
-
-## Integration Configuration
-
-| Thông tin | Chi tiết |
-| --- | --- |
-| **Integration Type** | Lambda Function |
-| **Proxy Integration** | Enabled |
-| **Target Lambda** | medecu-lambda-healthCheck |
-
----
-
-## Screenshot — Lambda Proxy Integration
-
-![image](https://github.com/user-attachments/assets/1d745e0e-67d6-46af-acf2-0dc9290c5190)\### Mô tả screenshot cần capture
-
-- API Gateway → Route `/health`
-
-- Tab Integration Request
-
-- Hiển thị:
-
-  - Lambda Function integration
-  - Lambda Proxy Integration = Enabled
-  - Target Lambda = `medecu-lambda-healthCheck`
-
----
-
-# Authentication Configuration — API Key
-
-Để bảo vệ API endpoint, em đã cấu hình API Key Authentication trên API Gateway.
-
-Chỉ các request chứa API Key hợp lệ mới có thể truy cập endpoint.
-
-## Authentication Method
-
-| Thông tin | Chi tiết |
-| --- | --- |
-| **Auth Type** | API Key |
-| **API Key Required** | Enabled |
-| **Stage Protected** | prod |
-
----
-
-## Screenshot — API Key Configuration
-
-![image](https://github.com/user-attachments/assets/720547d7-12f8-4e05-92f3-57c9035dcd20)\### Mô tả screenshot cần capture
-
-- API Gateway → Method Request
-
-- Hiển thị:
-
-  - API Key Required = true
-
-Hoặc:
-
-![image](https://github.com/user-attachments/assets/ec98acb1-d05c-483c-8f24-5672d44c7f99)\- Hiển thị API Key đã associate với stage
-
----
-
-# Throttling Configuration (Usage Plan)
-
-Em đã triển khai Usage Plan để giới hạn request rate và burst capacity nhằm tránh abuse và overload backend Lambda function.
-
-## Usage Plan
-
-| Thông tin | Chi tiết |
-| --- | --- |
-| **Usage Plan Name** | medecu-health-check-plan |
-| **Rate Limit** | 20 requests/second |
-| **Burst Limit** | 60 requests |
-| **Quota** | 5,000 requests/day |
-
----
-
-## Screenshot — Usage Plan & Throttling
-
-![image](https://github.com/user-attachments/assets/ff67d374-2945-4d73-bc71-f6ea2ed290b8)\### Mô tả screenshot cần capture
-
-- API Gateway → Usage Plans
-
-- Hiển thị:
-
-  - Rate limit
-  - Burst limit
-  - Quota
-  - Associated stage/API
-
----
-
-# Evidence Pack — API Authentication Testing
-
-## Test 1 — Authenticated Request (HTTP 200)
-
-Request có chứa API Key hợp lệ sẽ truy cập thành công API Gateway endpoint.
-
-### curl Test
-
-```bash
-curl -X GET "https://aws.hungtran.id.vn/health" \
-  -H "x-api-key: <valid-api-key>"
-```
-
-### Expected Response
-
-```json
-HTTP/1.1 200 OK
-
-{
-    "status": "healthy",
-    "timestamp": "2026-05-15T01:49:33.318781+00:00",
-    "service": "ai_agent",
-    "checks": {
-        "database": {
-            "status": "healthy",
-            "latency_ms": 358.73,
-            "type": "aurora-postgresql"
-        },
-        "redis": {
-            "status": "healthy",
-            "latency_ms": 339.75
-        },
-        "bedrock": {
-            "status": "healthy",
-            "latency_ms": 442.71,
-            "region": "ap-southeast-1",
-            "available_models": 93
-        },
-        "bedrock_kb": {
-            "status": "healthy",
-            "latency_ms": 371.87,
-            "knowledge_base_id": "9OK4SPYXVP",
-            "kb_status": "ACTIVE"
-        },
-        "efs": {
-            "status": "healthy",
-            "latency_ms": 216.47,
-            "mount": "/mnt/efs"
-        },
-        "main_app": {
-            "status": "healthy",
-            "latency_ms": 280.01,
-            "app_status": "healthy"
-        },
-        "ecs_services": {
-            "status": "healthy",
-            "services": {
-                "medecu-task-definition-service-4ri0kz65": {
-                    "status": "healthy",
-                    "running": 6,
-                    "desired": 6,
-                    "ecs_status": "ACTIVE"
-                }
-            }
-        }
-    }
-}
-```
-
----
-
-## Screenshot — Authenticated Request Success
-
-![image](https://github.com/user-attachments/assets/9a5a2db5-a748-4087-b0a7-11b958b8da7e)\### Mô tả screenshot cần capture
-
-- Postman
-
-- Hiển thị:
-
-  - curl command
-  - HTTP/1.1 200 OK
-  - JSON response body
-
----
-
-# Evidence Pack — Unauthorized Testing
-
-## Test 2 — Unauthenticated Request (HTTP 403)
-
-Request không chứa API Key sẽ bị API Gateway từ chối.
-
-### curl Test
-
-```bash
-curl -X GET "https://aws.hungtran.id.vn/health"
-```
-
-### Expected Response
-
-```json
-HTTP/1.1 403 Forbidden
-
-{
-  "message": "Forbidden"
-}
-```
-
----
-
-## Screenshot — Unauthenticated Request Blocked
-
-![image](https://github.com/user-attachments/assets/b86378ff-5275-4bd4-9cc5-e2417597b65a)\### Mô tả screenshot cần capture
-
-- Postman
-
-- Hiển thị:
-
-  - curl command không có API Key
-  - HTTP/1.1 403 Forbidden
-  - Response body `"Forbidden"`
-
----
-
-## 6. MH5 — Serverless Scaling Pattern (Xử lý tải đúng cách)
-
-### Scaling Pattern đã chọn
-
-**Pattern:** Provisioned Concurrency (Warm Lambda Instances)
-
-### Lý do chọn
-
-Lambda function của hệ thống được sử dụng cho backend health check API và có khả năng nhận request bất kỳ lúc nào từ frontend hoặc monitoring services.
-
-Trong mô hình Lambda mặc định, khi function không được invoke trong một khoảng thời gian, execution environment sẽ bị giải phóng. Request tiếp theo sẽ gây ra **cold start**, làm tăng latency do Lambda phải khởi tạo runtime environment trước khi xử lý request.
-
-Để giảm cold start latency và đảm bảo response time ổn định cho production workload, em triển khai **Provisioned Concurrency** cho Lambda function.
-
-Provisioned Concurrency giúp:
-
-- Giữ sẵn các Lambda execution environments ở trạng thái warm
-- Loại bỏ cold start khi có request đến
-- Giảm latency cho API response
-- Tăng tính ổn định cho production traffic
-
----
-
-### Lambda Function được áp dụng
-
-| Thông tin | Chi tiết |
-| --- | --- |
-| **Function Name** | medecu-lambda-healthCheck |
-| **Runtime** | Python 3.11 |
-| **Scaling Pattern** | Provisioned Concurrency |
-| **Provisioned Instances** | 2 |
-| **Region** | ap-southeast-1 |
-
----
-
-### Trạng thái trước khi bật Provisioned Concurrency
-
-Trước khi bật Provisioned Concurrency, Lambda function hoạt động theo mô hình on-demand mặc định.
-
-Khi function không được invoke trong thời gian dài, request tiếp theo sẽ tạo cold start.
-
----
-
-#### Cold Start Test
-
-### Bước thực hiện
-
-1. Tắt Provisioned Concurrency
-2. Chờ Lambda execution environment bị idle
-3. Gửi request mới đến Lambda
-4. Kiểm tra CloudWatch Logs
-
----
-
-#### Screenshot — Provisioned Concurrency Disabled
-
-![image](https://github.com/user-attachments/assets/3a63cece-c46e-43c4-b8f2-233fdd3040b0)**Mô tả screenshot cần capture:**
-
-- AWS Console → Lambda → Configuration
-
-- Hiển thị:
-
-  - Provisioned concurrency = Disabled
-  - Current concurrency configuration
-
----
-
-#### Screenshot — Cold Start Invocation
-
-![image](https://github.com/user-attachments/assets/b2d4d3d0-a0c4-4ce7-88e6-ed98af0587ad)**Mô tả screenshot cần capture:**
-
-- Terminal hoặc Postman
-- Request đầu tiên đến Lambda sau idle period
-- Response time cao hơn bình thường
-
----
-
-#### CloudWatch Logs — Cold Start Detected
-
-CloudWatch Logs cho thấy Lambda phải khởi tạo execution environment trước khi xử lý request.
-
-Ví dụ log:
-
-```text
-INIT_START Runtime Version: python:3.11
-INIT_REPORT Init Duration: 1450.32 ms
-REPORT RequestId: xxx Duration: 220.11 ms
-```
-
-`Init Duration` xuất hiện trong log xác nhận Lambda đã xảy ra cold start.
-
----
-
-#### Screenshot — Cold Start Logs
-
-![image](https://github.com/user-attachments/assets/727224db-6f4f-4752-afbb-a5a14bfa5143)**Mô tả screenshot cần capture:**
-
-- CloudWatch Logs
-
-- Hiển thị:
-
-  - `INIT_START`
-  - `INIT_REPORT`
-  - `Init Duration`
-
-- Chứng minh Lambda cold start đã xảy ra
-
----
-
-### Bật Provisioned Concurrency
-
-Sau khi xác nhận cold start behavior, em tiến hành bật Provisioned Concurrency cho Lambda function.
-
----
-
-#### Provisioned Concurrency Configuration
-
-| Thông tin | Chi tiết |
-| --- | --- |
-| **Function Name** | medecu-lambda-healthCheck |
-| **Provisioned Concurrency** | 2 |
-| **Alias** | prod |
-| **Status** | ✅ Enabled |
-
----
-
-#### AWS CLI Command
-
-```bash
-aws lambda put-provisioned-concurrency-config \
-  --function-name medecu-lambda-healthCheck \
-  --qualifier prod \
-  --provisioned-concurrent-executions 2
-```
-
----
-
-#### Screenshot — Provisioned Concurrency Enabled
-
-![image](https://github.com/user-attachments/assets/511ec571-d6b2-4f6b-a475-7a18392757a2)**Mô tả screenshot cần capture:**
-
-- AWS Console → Lambda → Aliases / Concurrency
-
-- Hiển thị:
-
-  - Provisioned concurrency = 2
-  - Alias = prod
-  - Status = Ready
-
----
-
-#### Screenshot — Warm Instances Ready
-
-![image](https://github.com/user-attachments/assets/912a78bf-cfe6-42f4-b207-3623eab236da)**Mô tả screenshot cần capture:**
-
-- AWS Console → Lambda
-
-- Hiển thị:
-
-  - Provisioned concurrent executions = 2
-  - Allocated provisioned environments
-  - Status Ready / Available
-
----
-
-### Test sau khi bật Provisioned Concurrency
-
-Sau khi bật Provisioned Concurrency, Lambda request được xử lý bởi warm execution environment.
-
-Request không còn gặp cold start.
-
----
-
-#### CloudWatch Logs — Warm Invocation
-
-Ví dụ log sau khi bật Provisioned Concurrency:
-
-```text
-START RequestId: xxx Version: prod
-REPORT RequestId: xxx Duration: 85.11 ms
-```
-
-CloudWatch Logs không còn xuất hiện:
-
-```text
-INIT_REPORT
-```
-
-Điều này xác nhận request đã được xử lý bởi warm instance.
-
----
-
-#### Screenshot — Warm Invocation Logs
-
-![image](https://github.com/user-attachments/assets/5882e104-8e06-4451-a0ac-6f7eff7023b6)**Mô tả screenshot cần capture:**
-
-- CloudWatch Logs
-
-- Hiển thị:
-
-  - Request execution logs
-  - Không có `INIT_REPORT`
-  - Không có `Init Duration`
-
-- Chứng minh Lambda đã chạy trên warm instance
-
----
-
-### So sánh trước và sau khi bật Provisioned Concurrency
-
-| Trạng thái | Cold Start | Init Duration | Response Stability |
-| --- | --- | --- | --- |
-| **Before Provisioned Concurrency** | Có | \~1450 ms | Không ổn định |
-| **After Provisioned Concurrency** | Không | 0 ms | Ổn định |
-
----
-
-### Chi phí Provisioned Concurrency
-
-Provisioned Concurrency được tính phí theo:
-
-```text
-Provisioned Concurrency Cost =
-Number of Instances × Memory Size × Time × Pricing Rate
-```
-
----
-
-#### Cost Estimation
-
-Cấu hình hiện tại:
-
-| Thông tin | Giá trị |
-| --- | --- |
-| **Provisioned Instances** | 2 |
-| **Memory Allocation** | 512 MB (0.512 GB) |
-| **Duration** | 1 hour |
-| **Region** | ap-southeast-1 |
-| **Pricing Rate** | $0.0000166667 per GB-second |
-
----
-
-#### Cost Calculation
-
-![image](https://github.com/user-attachments/assets/b2b0cb75-6ec3-463b-9cc7-4832b5c3585e)\`\`\`text 2 × 0.512 × 3600 × 0.0000166667 = approximately $0.061 per hour
-
-```
-
----
-
-### Pattern Rationale & Production Plan
-
-Provisioned Concurrency phù hợp với production workload của hệ thống vì:
-
-1. Giảm latency cho API request
-2. Loại bỏ cold start delay
-3. Tăng trải nghiệm người dùng
-4. Đảm bảo Lambda luôn sẵn sàng xử lý request
-
-Kế hoạch production:
-
-- Monitor Lambda duration và concurrent executions
-
-- Theo dõi CloudWatch metrics:
-
-  - Duration
-  - ConcurrentExecutions
-  - ProvisionedConcurrencyUtilization
-
-- Scale provisioned instances nếu traffic tăng
-
-- Kết hợp Auto Scaling cho Provisioned Concurrency trong production environment
-
----
-
-## 7. Application Carry-Forward Verification
-
-### Ứng dụng vẫn hoạt động end-to-end
-
-## Action 1 — Pipeline Execution
-
-Hệ thống backend ECS vẫn hoạt động ổn định sau khi triển khai W5 hardening components.
-
-Cluster backend đang chạy nhiều ECS tasks đồng thời và service ở trạng thái healthy.
-
-### Screenshot — ECS Pipeline Execution
-
-![image](https://github.com/user-attachments/assets/d07692e3-57cc-4ee9-8b57-e037094dacc9)**Mô tả screenshot cần capture:**
-
-- AWS Console → ECS Cluster
-
-- Hiển thị:
-
-  - Cluster `medecu-clusters`
-  - Running tasks
-  - Service status = Active
-  - ECS tasks đang Running
-
----
-
-## Action 2 — Bedrock Retrieval
-
-Bedrock retrieval workflow vẫn hoạt động thành công thông qua Lambda integration và Knowledge Base retrieval flow.
-
-### Screenshot — Bedrock Retrieval
-
-![image](https://github.com/user-attachments/assets/716df41c-576c-4201-ae19-97d1d745d9f3)**Mô tả screenshot cần capture:**
-
-- Bedrock Knowledge Base retrieval result
-
-- Hoặc Lambda invoke response
-
-- Hiển thị:
-
-  - Query request
-  - Retrieval result
-  - Successful response
-
----
-
-## Action 3 — Database Query
-
-Ứng dụng vẫn truy vấn database thành công sau khi triển khai các hardening components.
-
-### Screenshot — Database Query
-
-![image](https://github.com/user-attachments/assets/65a27f90-f68b-4e71-b30b-0a60b6a9609a)**Mô tả screenshot cần capture:**
-
-- Application query result hoặc SQL client
-
-- Hiển thị:
-
-  - Database query thành công
-  - Returned records/data
-  - Successful response/result
-
----
-
-## 8. Bonus - Stretch Goals (Tuỳ chọn)
-
-### 8.1 VPC Reachability Analyzer
-
-AWS Reachability Analyzer was used to validate internet connectivity paths. The public subnet path was successfully reachable, while the private subnet path failed due to routing configuration restrictions.
-
-![image](https://github.com/user-attachments/assets/d0610c9f-e4a0-41b5-a0b2-b142fad9432e)- Reachable Successful Connectivity Validation
-
-  ![image](https://github.com/user-attachments/assets/3956f8d9-fce2-4ae5-ba0c-2df39aa5c475)
-
-- Not Reachable Connectivity Failure Detection
-
-  ![image](https://github.com/user-attachments/assets/294f1876-7da4-46e7-8171-d9669e519541)
-
-### 8.2 Lambda Power Tuning
-
-Em triển khai AWS Lambda Power Tuning để benchmark Lambda function với nhiều mức memory khác nhau nhằm tìm cấu hình tối ưu giữa cost và performance.
-
-Lambda được sử dụng để test:
-
-```text
-medecu-lambda-healthCheck
-```
-
----
-
-### Deploy Lambda Power Tuning
-
-AWS Lambda Power Tuning được deploy dưới dạng AWS Step Functions workflow.
-
-#### Screenshot — Deploy Lambda Power Tuning
-
-![image](https://github.com/user-attachments/assets/a29a47d3-d57e-4a9b-b822-fbd21a1163c7)![image](https://github.com/user-attachments/assets/11aaf9cb-1ab5-40da-9884-0367e4570e72)**Mô tả screenshot cần capture:**
-
-- AWS Console → Step Functions
-
-- Hiển thị:
-
-  - Lambda Power Tuning state machine
-  - Deployment thành công
-
----
-
-### Input Configuration
-
-Em tạo file input để benchmark Lambda ở nhiều mức RAM khác nhau.
-
-#### Input File
-
-```json
-{
-  "lambdaARN": "arn:aws:lambda:ap-southeast-1:<ACCOUNT_ID>:function:medecu-lambda-healthCheck",
-  "powerValues": [128, 256, 512, 1024, 1536, 2048],
-  "num": 10,
-  "payload": {},
-  "strategy": "balanced"
-}
-```
-
-#### Ý nghĩa cấu hình
-
-| Parameter | Ý nghĩa |
-| --- | --- |
-| **lambdaARN** | Lambda cần benchmark |
-| **powerValues** | Các mức RAM cần test |
-| **num** | Số lần invoke mỗi mức RAM |
-| **payload** | Event gửi vào Lambda |
-| **strategy** | Strategy tối ưu (`cost`, `speed`, `balanced`) |
-
----
-
-#### Screenshot — Power Tuning Input File
-
-![image](https://github.com/user-attachments/assets/1951389a-4fe1-4f3d-999f-4b8c031db2e6)**Mô tả screenshot cần capture:**
-
-- File JSON input
-
-- Hiển thị:
-
-  - lambdaARN
-  - powerValues
-  - strategy
-  - num
-
----
-
-### Chạy Lambda Power Tuning
-
-Em thực hiện chạy Step Functions workflow với file input đã tạo.
-
-#### Screenshot — Running Power Tuning
-
-![image](https://github.com/user-attachments/assets/d45a185e-efc5-4391-a67b-c13e785e09f8)**Mô tả screenshot cần capture:**
-
-- AWS Step Functions
-
-- Hiển thị:
-
-  - Execution running/completed
-  - Workflow states
-  - Benchmark progress
-
----
-
-### Kết quả Power Tuning
-
-#### Screenshot — Power Tuning Result
-
-![image](https://github.com/user-attachments/assets/20a50eb0-c5f0-4714-bb58-516f39f4b2ff)**Mô tả screenshot cần capture:**
-
-- Output graph hoặc visualization
-
-- Hiển thị:
-
-  - Cost vs duration
-  - Recommended memory size
-  - So sánh performance giữa các mức RAM
-
----
-
-### Kết quả đạt được
-
-- Benchmark Lambda với nhiều mức memory khác nhau
-- So sánh execution duration và estimated cost
-- Xác định memory configuration tối ưu theo strategy `balanced`
-- Có cơ sở tối ưu Lambda production workload
-
----
-
 ## Summary
 
 | Must-Have | Status | Evidence |
@@ -1457,8 +778,6 @@ Em thực hiện chạy Step Functions workflow với file input đã tạo.
 | **MH1 - Multi-VPC Connectivity** | ✅ COMPLETED | Single VPC with Multi-AZ + Flow Logs |
 | **MH2 - Network Security / SG+NACL** | ✅ COMPLETED | SG + NACL Hardening Rules |
 | **MH3 - File Storage + Backup** | ✅ COMPLETED | EFS Mount + Restore Test |
-| **MH4 - API Gateway + Auth** | ✅ COMPLETED | 200 OK + 403 Forbidden |
-| **MH5 - Serverless Scaling** | ✅ COMPLETED | Provisioned Concurrency + Throttle |
 
 **Application Status:** ✅ Running end-to-end with W5 hardening layer
 
